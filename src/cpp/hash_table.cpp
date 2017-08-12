@@ -31,8 +31,15 @@
 	        val --> Integer value of the node to be inserted
 */
 
-void list_insert(list* l, int key_n, int value) {
+node *cur,*it;
 
+void list_insert(list* l, int key_n, int value) {
+	cur = new node; cur->key=key_n; cur->val=value;
+	it = l.head;
+	while(it->next!=NULL){
+		it=it->next;
+	}
+	it->next=cur;
 } // INSERT function ENDs
 
 
@@ -42,12 +49,26 @@ void list_insert(list* l, int key_n, int value) {
 */
 
 void list_delete(list* l, int k) {
-
+	it=l.head;
+	while(it->next!=NULL && it->next->key!=k){
+		it=it->next;
+	}
+	if(it->next->key==k){
+		it->next=it->next->next;
+	}
 }
 
 
 node *list_contains(list *l, int k) {
-
+	it=l.head;
+	while(it->next!=NULL && it->key!=k){
+		it=it->next;
+	}
+	if(it->key==k){
+		return node;
+	}else{
+		return NULL;
+	}
 }
 
 /********************************************************************
@@ -79,7 +100,7 @@ void shrink_table(hash_table *t);
 				  s   --> Size of table	
 */
 int hash(int key, int s){
-
+	return key%s;
 }
 
 /* Whether or not the Hash table contains the given key
@@ -87,7 +108,8 @@ int hash(int key, int s){
                key --> Key to look for
 */
 node *hash_contains(hash_table *t, int key) {
-
+	int index = hash(key,t->current_size);
+	return list_contains(t->table[index],key);
 }
 
 /* Deletes the first occurence of the given key from the hash table if it is present
@@ -95,7 +117,8 @@ node *hash_contains(hash_table *t, int key) {
 				  key --> Key of (key, value) pair to delete
 */
 void hash_delete(hash_table *t, int key) {
-
+	int index = hash(key,t->current_size);
+	return list_delete(t->table[index],key);
 }
 
 /* Inserts the given key value pair into the hash table
@@ -105,22 +128,46 @@ void hash_delete(hash_table *t, int key) {
 				  value --> Value fo the (key, value) pair
 */
 void hash_insert(hash_table* t, int key, int value){
-
+	int index = hash(key,t->current_size);
+	return list_insert(t->table[index],key,value);
 }
 
 /* Gets the value assosciated with the key in the hash table
 	* Returns NULL if key not present
 */
 int hash_get(hash_table* t, int key){
-
+	node *g = hash_contains(t,key);
+	if(g!=NULL){
+		return g->val;
+	}else{
+		return NULL;
+	}
 }
 
 void shrink_table(hash_table *t) {
-
+	hash_table *n_table = new hash_table(t->current_size/2);
+	for(int i=0; i<t->current_size; i++){
+		it = t->table[i].head;
+		while(it->next!=NULL){
+			hash_insert(n_table,it->key,it->val);
+			it=it->next;
+		}
+		hash_insert(n_table,it->key,it->val);
+	}
+	return n_table;
 }
 
 void grow_table(hash_table *t) {
-
+	hash_table *n_table = new hash_table(2*t->current_size);
+	for(int i=0; i<t->current_size; i++){
+		it = t->table[i].head;
+		while(it->next!=NULL){
+			hash_insert(n_table,it->key,it->val);
+			it=it->next;
+		}
+		hash_insert(n_table,it->key,it->val);
+	}
+	return n_table;
 }
 
 void hash_init(hash_table **t, int s) {
