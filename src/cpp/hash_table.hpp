@@ -1,16 +1,28 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
-struct node {
+#define MAXN 1e6+1
 
+struct node {
+  int key,val;
+  node *next;
+  node(){
+    key=val=0;
+    n=NULL;
+  }
 };
 
 struct list {
-
+  node *head;
 };
 
 struct hash_table {
-
+  int current_size;
+  list table[MAXN];
+  hash_table(int size){
+    current_size=size;
+    for(int i=0; i<current_size; i++) table[i].head=NULL;
+  }
 };
 
 int hash(int key, int s); // computes the hash function of the key given s, the size of the table
